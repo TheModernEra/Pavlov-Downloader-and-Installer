@@ -16,7 +16,7 @@ namespace Pavlov_Downloader_and_Installer
             String pavlovURL = "http://cdn.pavlov-vr.com/PavlovShack_Build23_0.80.60.zip";
             Directory.CreateDirectory("C:/Program Files (x86)/ModernEra");
             Console.WriteLine("Checking for Pavlov...");
-            if  (!File.Exists("C:/Program Files (x86)/ModernEra/pavlov.zip"))
+            if  (!Directory.Exists("C:/Program Files (x86)/ModernEra/pavlov"))
             {
                 Console.WriteLine("Downloading Pavlov...");
                 Uri pavlov = new Uri(pavlovURL);
@@ -35,10 +35,22 @@ namespace Pavlov_Downloader_and_Installer
                 {
                     file.WriteLine(name);
                 }
+                string[] bruh = File.ReadLines("C:/Program Files (x86)/ModernEra/pavlov/install.bat").ToArray();
+                int counter = 0;
+                foreach (string line in bruh)
+                {
+                    if (line.StartsWith("set ADB="))
+                    {
+                        bruh[counter] = "set ADB = C:/Program Files (x86)/ModernEra/pavlov/platform-tools/win/adb.exe";
+                    }
+                    counter++;
+                }
+                File.Delete("C:/Program Files (x86)/ModernEra/pavlov/install.bat");
+                System.IO.File.WriteAllLines("C:/Program Files (x86)/ModernEra/pavlov/install.bat", bruh);
                 System.Diagnostics.Process.Start("C:/Program Files (x86)/ModernEra/pavlov/install.bat");
             } else
             {
-                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it(install)?");
+                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it (install)?");
                 String yeet = Console.ReadLine();
                 yeet = yeet.ToLower();
                 if (yeet.Equals("yes"))
@@ -61,12 +73,24 @@ namespace Pavlov_Downloader_and_Installer
                         file.WriteLine(name);
                     }
                     Console.WriteLine("Pavlov unzipped! Starting installation...");
+                    string[] bruh = File.ReadLines("C:/Program Files (x86)/ModernEra/pavlov/install.bat").ToArray();
+                    int counter = 0;
+                    foreach (string line in bruh)
+                    {
+                        if (line.StartsWith("set ADB="))
+                        {
+                            bruh[counter] = "set ADB = C:/Program Files (x86)/ModernEra/pavlov/platform-tools/win/adb.exe";
+                        }
+                        counter++;
+                    }
+                    File.Delete("C:/Program Files (x86)/ModernEra/pavlov/install.bat");
+                    System.IO.File.WriteAllLines("C:/Program Files (x86)/ModernEra/pavlov/install.bat", bruh);
                     System.Diagnostics.Process.Start("C:/Program Files (x86)/ModernEra/pavlov/install.bat");
 
                 }
                 else if (yeet.Equals("delete"))
                 {
-                    if (File.Exists("C:/Program Files (x86)/ModernEra/pavlov"))
+                    if (Directory.Exists("C:/Program Files (x86)/ModernEra/pavlov"))
                     {
                         Directory.Delete("C:/Program Files (x86)/ModernEra/pavlov/", true);
                     }
