@@ -38,7 +38,7 @@ namespace Pavlov_Downloader_and_Installer
                 System.Diagnostics.Process.Start("C:/Program Files (x86)/ModernEra/pavlov/install.bat");
             } else
             {
-                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it(install)??");
+                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it(install)?");
                 String yeet = Console.ReadLine();
                 yeet = yeet.ToLower();
                 if (yeet.Equals("yes"))
