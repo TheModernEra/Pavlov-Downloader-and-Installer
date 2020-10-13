@@ -45,10 +45,10 @@ namespace Pavlov_Downloader_and_Installer
                 System.Diagnostics.Process.Start(adbLocation, "kill-server");
             } else
             {
-                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it (install)?");
+                Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (redownload), delete it (delete), install to your Quest with it (install) or (exit)?");
                 String yeet = Console.ReadLine();
                 yeet = yeet.ToLower();
-                if (yeet.Equals("yes"))
+                if (yeet.Equals("redownload"))
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov.zip");
                     Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov", true);
@@ -100,9 +100,12 @@ namespace Pavlov_Downloader_and_Installer
                     String command = "devices";
                     System.Diagnostics.Process.Start(adbLocation, command);
                     System.Diagnostics.Process.Start(adbLocation, "kill-server");
-                } else
+                } else if (yeet.Equals("exit"))
                 {
                     Console.WriteLine("Ok then, see ya!");
+                } else
+                {
+                    Console.WriteLine("I don't know what that means, be more specific. Better luck next time! :)");
                 }
             }
             Console.ReadLine();
