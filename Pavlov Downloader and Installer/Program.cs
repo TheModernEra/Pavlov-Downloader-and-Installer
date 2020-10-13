@@ -39,10 +39,8 @@ namespace Pavlov_Downloader_and_Installer
                 {
                     file.WriteLine(name);
                 }
-                // add individual adb commands here
-                String command = "devices";
-                System.Diagnostics.Process.Start(adbLocation, command);
-                System.Diagnostics.Process.Start(adbLocation, "kill-server");
+                adbCommands();
+                Console.WriteLine("Install complete! Press any key to exit.");
             } else
             {
                 Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (redownload), delete it (delete), install to your Quest with it (install) or (exit)?");
@@ -69,8 +67,8 @@ namespace Pavlov_Downloader_and_Installer
                         file.WriteLine(name);
                     }
                     Console.WriteLine("Pavlov unzipped! Starting installation...");
-                    System.Diagnostics.Process.Start(adbLocation, "devices");
-                    System.Diagnostics.Process.Start(adbLocation, "kill-server");
+                    adbCommands();
+                    Console.WriteLine("Install complete! Press any key to exit.");
                 }
                 else if (yeet.Equals("delete"))
                 {
@@ -97,9 +95,8 @@ namespace Pavlov_Downloader_and_Installer
                         file.WriteLine(name);
                     }
                     Console.WriteLine("Starting installation...");
-                    String command = "devices";
-                    System.Diagnostics.Process.Start(adbLocation, command);
-                    System.Diagnostics.Process.Start(adbLocation, "kill-server");
+                    adbCommands();
+                    Console.WriteLine("Install complete! Press any key to exit.");
                 } else if (yeet.Equals("exit"))
                 {
                     Console.WriteLine("Ok then, see ya!");
@@ -109,6 +106,19 @@ namespace Pavlov_Downloader_and_Installer
                 }
             }
             Console.ReadLine();
+        }
+        static void adbCommands()
+        {
+            String adbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\platform-tools\\win\\adb.exe";
+            Process process = new Process();
+            process = System.Diagnostics.Process.Start(adbLocation, "uninstall com.yuh.pavlov");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "uninstall com.davevillz.pavlov");
+            process.WaitForExit();
+            String apkCommand = "install " + @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\Pavlov-Android-Shipping-arm64-es2.apk";
+            Console.WriteLine(apkCommand);
+            System.Diagnostics.Process.Start(adbLocation, apkCommand);
+            process.WaitForExit();
         }
     }
 }
