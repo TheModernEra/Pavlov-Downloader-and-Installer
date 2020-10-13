@@ -2,8 +2,7 @@
 using System.IO;
 using System.Net;
 using System.IO.Compression;
-using System.Linq;
-
+using System.Diagnostics;
 // hello github
 
 namespace Pavlov_Downloader_and_Installer
@@ -12,9 +11,12 @@ namespace Pavlov_Downloader_and_Installer
     {
         static void Main(string[] args)
         {
+            foreach (var process in Process.GetProcessesByName("adb"))
+            {
+                process.Kill();
+            }
             WebClient p = new WebClient();
             String adbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\platform-tools\\win\\adb.exe";
-            Console.WriteLine(adbLocation);
             String pavlovURL = "http://cdn.pavlov-vr.com/PavlovShack_Build23_0.80.60.zip";
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra");
             Console.WriteLine("Checking for Pavlov...");
@@ -40,6 +42,7 @@ namespace Pavlov_Downloader_and_Installer
                 // add individual adb commands here
                 String command = "devices";
                 System.Diagnostics.Process.Start(adbLocation, command);
+                System.Diagnostics.Process.Start(adbLocation, "kill-server");
             } else
             {
                 Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (yes/no), delete it (delete) or install the game with it (install)?");
@@ -66,8 +69,8 @@ namespace Pavlov_Downloader_and_Installer
                         file.WriteLine(name);
                     }
                     Console.WriteLine("Pavlov unzipped! Starting installation...");
-                    String command = "devices";
-                    System.Diagnostics.Process.Start(adbLocation, command);
+                    System.Diagnostics.Process.Start(adbLocation, "devices");
+                    System.Diagnostics.Process.Start(adbLocation, "kill-server");
                 }
                 else if (yeet.Equals("delete"))
                 {
@@ -96,6 +99,7 @@ namespace Pavlov_Downloader_and_Installer
                     Console.WriteLine("Starting installation...");
                     String command = "devices";
                     System.Diagnostics.Process.Start(adbLocation, command);
+                    System.Diagnostics.Process.Start(adbLocation, "kill-server");
                 } else
                 {
                     Console.WriteLine("Ok then, see ya!");
