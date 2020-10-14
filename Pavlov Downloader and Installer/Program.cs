@@ -18,29 +18,39 @@ namespace Pavlov_Downloader_and_Installer
             WebClient p = new WebClient();
             String adbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\platform-tools\\win\\adb.exe";
             String pavlovURL = "http://cdn.pavlov-vr.com/PavlovShack_Build23_0.80.60.zip";
+            String pavlovAPK = "Pavlov-Android-Shipping-arm64-es2.apk";
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra");
             Console.WriteLine("Checking for Pavlov...");
             if  (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov"))
             {
-                Console.WriteLine("Downloading Pavlov...");
-                Uri pavlov = new Uri(pavlovURL);
-                String filename = new string(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov.zip");
-                p.DownloadFile(pavlov, filename);
-                Console.WriteLine("Pavlov Downloaded! Unzipping...");
-                ZipFile.ExtractToDirectory(filename, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov");
-                Console.WriteLine("Pavlov unzipped! Starting installation...");
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt"))
+                Console.WriteLine("You haven't downloaded Pavlov yet! Would you like to download and install it (yes/no) ?");
+                String hoefosho = Console.ReadLine();
+                hoefosho = hoefosho.ToLower();
+                if (hoefosho.Equals("yes"))
                 {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt");
-                }
-                Console.WriteLine("What do you want your name to be?");
-                String name = Console.ReadLine();
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt", true))
+                    Console.WriteLine("Downloading Pavlov...");
+                    Uri pavlov = new Uri(pavlovURL);
+                    String filename = new string(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov.zip");
+                    p.DownloadFile(pavlov, filename);
+                    Console.WriteLine("Pavlov Downloaded! Unzipping...");
+                    ZipFile.ExtractToDirectory(filename, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov");
+                    Console.WriteLine("Pavlov unzipped! Starting installation...");
+                    if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt"))
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt");
+                    }
+                    Console.WriteLine("What do you want your name to be?");
+                    String name = Console.ReadLine();
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\name.txt", true))
+                    {
+                        file.WriteLine(name);
+                    }
+                    adbCommands();
+                    Console.WriteLine("Install complete! Press any key to exit.");
+                } else
                 {
-                    file.WriteLine(name);
+                    Console.WriteLine("Ok, you know where to find me if you need me I guess");
                 }
-                adbCommands();
-                Console.WriteLine("Install complete! Press any key to exit.");
             } else
             {
                 Console.WriteLine("You already have Pavlov downloaded! Do you want to redownload it (redownload), delete it (delete), install to your Quest with it (install) or (exit)?");
@@ -111,14 +121,30 @@ namespace Pavlov_Downloader_and_Installer
         {
             String adbLocation = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\platform-tools\\win\\adb.exe";
             Process process = new Process();
-            process = System.Diagnostics.Process.Start(adbLocation, "uninstall com.yuh.pavlov");
+            process = System.Diagnostics.Process.Start(adbLocation, "uninstall com.vankrupt.pavlov");
             process.WaitForExit();
             process = System.Diagnostics.Process.Start(adbLocation, "uninstall com.davevillz.pavlov");
             process.WaitForExit();
-            String apkCommand = "install " + @Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\ModernEra\\pavlov\\Pavlov-Android-Shipping-arm64-es2.apk";
-            Console.WriteLine(apkCommand);
-            System.Diagnostics.Process.Start(adbLocation, apkCommand);
+            String filesFolder = Path.GetPathRoot(Environment.SystemDirectory);
+            String apkCommand = "install " + filesFolder + "\\" + "\"Program Files (x86)\\ModernEra\\pavlov\\Pavlov-Android-Shipping-arm64-es2.apk\"";
+            process = System.Diagnostics.Process.Start(adbLocation, apkCommand);
             process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "-d shell pm grant com.vankrupt.pavlov android.permission.RECORD_AUDIO");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "-d shell pm grant com.vankrupt.pavlov android.permission.READ_EXTERNAL_STORAGE");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "-d shell pm grant com.vankrupt.pavlov android.permission.WRITE_EXTERNAL_STORAGE");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "-d shell mkdir /sdcard/Android/obb/com.vankrupt.pavlov");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "push " + filesFolder + "\\" + "\"Program Files (x86)\\ModernEra\\pavlov\\main.23.com.vankrupt.pavlov.obb\"" + " /sdcard/Android/obb/com.vankrupt.pavlov");
+            process.WaitForExit();
+            process = System.Diagnostics.Process.Start(adbLocation, "push " + filesFolder + "\\" + "\"Program Files (x86)\\ModernEra\\pavlov\\name.txt\"" + " /sdcard/pavlov.name.txt");
+            process.WaitForExit();
+            foreach (var bitch in Process.GetProcessesByName("adb"))
+            {
+                bitch.Kill();
+            }
         }
     }
 }
